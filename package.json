@@ -1,0 +1,14 @@
+{
+  "name": "swapi-automation-postman",
+  "version": "1.0.0",
+  "description": "API Automation in Postman with Newman ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kitty Garrison",
+  "license": "ISC",
+  "devDependencies": {
+    "newman": "^4.5.7"
+  }
+}

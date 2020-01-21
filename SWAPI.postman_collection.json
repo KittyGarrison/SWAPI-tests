@@ -1,0 +1,665 @@
+{
+	"info": {
+		"_postman_id": "f625c067-2118-4a25-bf81-0b710fe9f1be",
+		"name": "SWAPI Automation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Character",
+			"item": [
+				{
+					"name": "character",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5dcb28e5-1a81-4cfc-ace0-d67c956e0b72",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f628bf83-6a49-4435-82bc-1e75216c1c97",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://swapi.co/api/people/1",
+							"protocol": "https",
+							"host": [
+								"swapi",
+								"co"
+							],
+							"path": [
+								"api",
+								"people",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "random-character",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5dcb28e5-1a81-4cfc-ace0-d67c956e0b72",
+								"exec": [
+									"// First thing's first, make sure that the responce is OK",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Hold the responce in a local variable.",
+									"let jsonData = pm.response.json();",
+									"",
+									"",
+									"pm.test(\"Gender is not Male\", function () {",
+									"    let isNotMan = jsonData.gender !== \"male\"",
+									"    pm.expect(isNotMan).to.be.true;",
+									"});     ",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f628bf83-6a49-4435-82bc-1e75216c1c97",
+								"exec": [
+									"            ",
+									"",
+									"// Get a random number between 1-9",
+									"var randomCharID = Math.floor((Math.random() * 9) + 1);",
+									"",
+									"// Set an environment variable to the value of the random character id from array",
+									"postman.setEnvironmentVariable(\"characterID\", randomCharID)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://swapi.co/api/people/{{characterID}}",
+							"protocol": "https",
+							"host": [
+								"swapi",
+								"co"
+							],
+							"path": [
+								"api",
+								"people",
+								"{{characterID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "film_test",
+			"item": [
+				{
+					"name": "random-character-save-films",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5dcb28e5-1a81-4cfc-ace0-d67c956e0b72",
+								"exec": [
+									"// First thing's first, make sure that the responce is OK",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Hold the responce in a local variable.",
+									"let jsonData = pm.response.json();",
+									"",
+									"// Log and the characters Name",
+									"console.log(\"Getting films for \", jsonData.name)",
+									"pm.test(\"charactersName enviroment var is set\", function () {",
+									"    pm.expect(isGoodEnvVarSet(\"charactersName\", jsonData.name)).to.be.true;",
+									"});",
+									"",
+									"// Save URL to an enviromnt variable and test that the enviroment variable can be retrived ",
+									"pm.test(\"charactersUrl enviroment var is set\", function () {",
+									"    pm.expect(isGoodEnvVarSet(\"charactersUrl\", request.url)).to.be.true;",
+									"});",
+									"",
+									"// Set the films in the responce to an enviromnt variable and test that the enviroment variable can be retrived.",
+									"pm.test(\"Films enviroment var is set\", function () {",
+									"    pm.expect(isGoodEnvVarSet(\"films\", jsonData.films)).to.be.true;",
+									"});",
+									"",
+									"// get the films list",
+									"let films = pm.environment.get(\"films\");",
+									"",
+									"// Get a random film from the list",
+									"let randomFilmUrl = films[randomListItem(films)];",
+									"",
+									"// Set the character's film URL to an enviromnt variable and test that the enviroment variable can be retrived.",
+									"pm.test(\"CharactersFilmUrl enviroment var is set\", function () {",
+									"    pm.expect(isGoodEnvVarSet(\"charactersFilmUrl\", randomFilmUrl)).to.be.true;",
+									"});",
+									"",
+									"",
+									"// **FUNCTIONS**",
+									"",
+									"// retruns a random index of an item given an array. Note: to include 0 no \"+1\" was not added",
+									"function randomListItem(list){",
+									"    return Math.floor((Math.random() * list.length));",
+									"}",
+									"",
+									"// Set an enviroment variable to a property only if it exists in the responce and return success.",
+									"function isGoodEnvVarSet(name, prop){",
+									"    if(prop){",
+									"        pm.environment.set(name, prop);",
+									"        let setVar = pm.environment.get(name);",
+									"        console.log(name, \" has been set to \", setVar);",
+									"        return true",
+									"    }else{",
+									"        console.log(\"That property is \", prop);",
+									"        return false",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f628bf83-6a49-4435-82bc-1e75216c1c97",
+								"exec": [
+									"            ",
+									"",
+									"// Get a random number between 1-9",
+									"var randomCharID = Math.floor((Math.random() * 9) + 1);",
+									"",
+									"// Set an environment variable to the value of the random character id from array",
+									"postman.setEnvironmentVariable(\"characterID\", randomCharID)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://swapi.co/api/people/{{characterID}}",
+							"protocol": "https",
+							"host": [
+								"swapi",
+								"co"
+							],
+							"path": [
+								"api",
+								"people",
+								"{{characterID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "film-has-character",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d395c29d-b9ab-4d1b-b233-bb4820c8af1d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "76908890-9adb-4941-a5df-87ec3693a4b2",
+								"exec": [
+									"// First thing's first, make sure that the responce is OK",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Hold the responce in a local variable.",
+									"let jsonData = pm.response.json();",
+									"",
+									"// set the env vars locally",
+									"let charactersUrl = pm.environment.get(\"charactersUrl\");",
+									"let charactersName = pm.environment.get(\"charactersName\");",
+									"",
+									"// Log the films title",
+									"console.log(\"Testing to see that \" + charactersName + \" is in \" + jsonData.title);",
+									"",
+									"pm.test(\"Body contains characters URL\", function () {",
+									"    pm.expect(pm.response.text()).to.include(charactersUrl);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{charactersFilmUrl}}",
+							"host": [
+								"{{charactersFilmUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Schema",
+			"item": [
+				{
+					"name": "random-character",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5dcb28e5-1a81-4cfc-ace0-d67c956e0b72",
+								"exec": [
+									"// First thing's first, make sure that the responce is OK",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Hold the responce in a local variable.",
+									"let jsonData = pm.response.json();",
+									"",
+									"// describe the schema",
+									"var schema = {",
+									"    \"description\": \"A person within the Star Wars universe\",",
+									"    \"$schema\": \"http://json-schema.org/draft-04/schema\",",
+									"    \"type\": \"object\",",
+									"    \"title\": \"People\",",
+									"    \"required\": [",
+									"        \"name\",",
+									"        \"height\",",
+									"        \"mass\",",
+									"        \"hair_color\",",
+									"        \"skin_color\",",
+									"        \"eye_color\",",
+									"        \"birth_year\",",
+									"        \"gender\",",
+									"        \"homeworld\",",
+									"        \"films\",",
+									"        \"species\",",
+									"        \"vehicles\",",
+									"        \"starships\",",
+									"        \"url\",",
+									"        \"created\",",
+									"        \"edited\"",
+									"    ],",
+									"    \"properties\": {",
+									"        \"species\": {",
+									"            \"description\": \"The url of the species resource that this person is.\",",
+									"            \"type\": \"array\"",
+									"        },",
+									"        \"edited\": {",
+									"            \"format\": \"date-time\",",
+									"            \"type\": \"string\",",
+									"            \"description\": \"the ISO 8601 date format of the time that this resource was edited.\"",
+									"        },",
+									"        \"skin_color\": {",
+									"            \"description\": \"The skin color of this person.\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"homeworld\": {",
+									"            \"description\": \"The url of the planet resource that this person was born on.\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"mass\": {",
+									"            \"description\": \"The mass of this person in kilograms.\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"starships\": {",
+									"            \"description\": \"An array of starship resources that this person has piloted\",",
+									"            \"type\": \"array\"",
+									"        },",
+									"        \"height\": {",
+									"            \"description\": \"The height of this person in meters.\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"films\": {",
+									"            \"description\": \"An array of urls of film resources that this person has been in.\",",
+									"            \"type\": \"array\"",
+									"        },",
+									"        \"url\": {",
+									"            \"format\": \"uri\",",
+									"            \"type\": \"string\",",
+									"            \"description\": \"The url of this resource\"",
+									"        },",
+									"        \"name\": {",
+									"            \"description\": \"The name of this person.\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"eye_color\": {",
+									"            \"description\": \"The eye color of this person.\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"hair_color\": {",
+									"            \"description\": \"The hair color of this person.\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"gender\": {",
+									"            \"description\": \"The gender of this person (if known).\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"created\": {",
+									"            \"format\": \"date-time\",",
+									"            \"type\": \"string\",",
+									"            \"description\": \"The ISO 8601 date format of the time that this resource was created.\"",
+									"        },",
+									"        \"vehicles\": {",
+									"            \"description\": \"An array of vehicle resources that this person has piloted\",",
+									"            \"type\": \"array\"",
+									"        },",
+									"        \"birth_year\": {",
+									"            \"description\": \"The birth year of this person. BBY (Before the Battle of Yavin) or ABY (After the Battle of Yavin).\",",
+									"            \"type\": \"string\"",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"// Test the responce fits the schema",
+									"pm.test('Schema is valid', function() {",
+									"  var valid = tv4.validate(jsonData, schema, false, true);",
+									"  // console.log(valid);",
+									"  if (valid !== true) {",
+									"      console.log(tv4.error);",
+									"  }",
+									"  pm.expect(valid).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f628bf83-6a49-4435-82bc-1e75216c1c97",
+								"exec": [
+									"            ",
+									"",
+									"// Get a random number between 1-9",
+									"var randomCharID = Math.floor((Math.random() * 9) + 1);",
+									"",
+									"// Set an environment variable to the value of the random character id from array",
+									"postman.setEnvironmentVariable(\"characterID\", randomCharID)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://swapi.co/api/people/{{characterID}}",
+							"protocol": "https",
+							"host": [
+								"swapi",
+								"co"
+							],
+							"path": [
+								"api",
+								"people",
+								"{{characterID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "random-character-fails",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5dcb28e5-1a81-4cfc-ace0-d67c956e0b72",
+								"exec": [
+									"const jsonData = JSON.parse(responseBody);",
+									"//const requiredKeys = postman.getEnvironmentVariable(\"REQUIRED\");",
+									"",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Gender is not Male\", function () {",
+									"    let isNotMan = jsonData.gender !== \"male\"",
+									"    pm.expect(isNotMan).to.be.true;",
+									"});     ",
+									"",
+									"",
+									"var schema = {",
+									"    \"description\": \"A person within the Star Wars universe\",",
+									"    \"$schema\": \"http://json-schema.org/draft-04/schema\",",
+									"    \"type\": \"object\",",
+									"    \"title\": \"People\",",
+									"    \"required\": [",
+									"        \"name\",",
+									"        \"height\",",
+									"        \"mass\",",
+									"        \"hair_color\",",
+									"        \"skin_color\",",
+									"        \"eye_color\",",
+									"        \"birth_year\",",
+									"        \"gender\",",
+									"        \"homeworld\",",
+									"        \"films\",",
+									"        \"species\",",
+									"        \"vehicles\",",
+									"        \"starships\",",
+									"        \"url\",",
+									"        \"created\",",
+									"        \"edited\"",
+									"    ],",
+									"    \"properties\": {",
+									"        \"species\": {",
+									"            \"description\": \"The url of the species resource that this person is.\",",
+									"            \"type\": \"array\"",
+									"        },",
+									"        \"edited\": {",
+									"            \"format\": \"date-time\",",
+									"            \"type\": \"string\",",
+									"            \"description\": \"the ISO 8601 date format of the time that this resource was edited.\"",
+									"        },",
+									"        \"skin_color\": {",
+									"            \"description\": \"The skin color of this person.\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"homeworld\": {",
+									"            \"description\": \"The url of the planet resource that this person was born on.\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"mass\": {",
+									"            \"description\": \"The mass of this person in kilograms.\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"starships\": {",
+									"            \"description\": \"An array of starship resources that this person has piloted\",",
+									"            \"type\": \"array\"",
+									"        },",
+									"        \"height\": {",
+									"            \"description\": \"The height of this person in meters.\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"films\": {",
+									"            \"description\": \"An array of urls of film resources that this person has been in.\",",
+									"            \"type\": \"array\"",
+									"        },",
+									"        \"url\": {",
+									"            \"format\": \"uri\",",
+									"            \"type\": \"string\",",
+									"            \"description\": \"The url of this resource\"",
+									"        },",
+									"        \"name\": {",
+									"            \"description\": \"The name of this person.\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"eye_color\": {",
+									"            \"description\": \"The eye color of this person.\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"hair_color\": {",
+									"            \"description\": \"The hair color of this person.\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"gender\": {",
+									"            \"description\": \"The gender of this person (if known).\",",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"created\": {",
+									"            \"format\": \"date-time\",",
+									"            \"type\": \"string\",",
+									"            \"description\": \"The ISO 8601 date format of the time that this resource was created.\"",
+									"        },",
+									"        \"vehicles\": {",
+									"            \"description\": \"An array of vehicle resources that this person has piloted\",",
+									"            \"type\": \"string\"",
+									"            // intentionaly changed \"array\" to \"string\" to make this test fail and see the logs",
+									"        },",
+									"        \"birth_year\": {",
+									"            \"description\": \"The birth year of this person. BBY (Before the Battle of Yavin) or ABY (After the Battle of Yavin).\",",
+									"            \"type\": \"string\"",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"",
+									"pm.test('Schema is valid', function() {",
+									"  var valid = tv4.validate(jsonData, schema, false, true);",
+									"  ",
+									"  console.log(valid);",
+									"  if (valid !== true) {",
+									"      console.log(tv4.error);",
+									"  }",
+									"  pm.expect(valid).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f628bf83-6a49-4435-82bc-1e75216c1c97",
+								"exec": [
+									"            ",
+									"",
+									"// Get a random number between 1-9",
+									"var randomCharID = Math.floor((Math.random() * 9) + 1);",
+									"",
+									"// Set an environment variable to the value of the random character id from array",
+									"postman.setEnvironmentVariable(\"characterID\", randomCharID)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://swapi.co/api/people/{{characterID}}",
+							"protocol": "https",
+							"host": [
+								"swapi",
+								"co"
+							],
+							"path": [
+								"api",
+								"people",
+								"{{characterID}}"
+							]
+						},
+						"description": "Shows an informational error in the logs."
+					},
+					"response": []
+				},
+				{
+					"name": "people-schema",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4a5793f7-6dac-4844-bdd0-0c4ebd60a6d4",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"//Saving the list of requiered fields value into an environment variable",
+									"// postman.setEnvironmentVariable(\"REQUIRED\", jsonData.required);",
+									"",
+									"pm.environment.set(\"REQUIRED\", jsonData.required);",
+									"",
+									"console.log(jsonData.required);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"    "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://swapi.co/api/people/schema",
+							"protocol": "https",
+							"host": [
+								"swapi",
+								"co"
+							],
+							"path": [
+								"api",
+								"people",
+								"schema"
+							]
+						},
+						"description": "Returns the schema that we use to validate the people call"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
